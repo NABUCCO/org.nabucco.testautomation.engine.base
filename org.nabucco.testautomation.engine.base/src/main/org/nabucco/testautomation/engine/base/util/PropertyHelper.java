@@ -371,28 +371,89 @@ public abstract class PropertyHelper {
         }
         
         switch (property.getType()) {
-        case BOOLEAN:
-            return ((BooleanProperty) property).getValue().getValue().toString();
-        case DATE:
-            return ((DateProperty) property).getValue().getValue().toString();
-        case DOUBLE:
-            return ((DoubleProperty) property).getValue().getValue().toString();
-        case INTEGER:
-            return ((IntegerProperty) property).getValue().getValue().toString();
+        
+        case BOOLEAN: {
+            BooleanValue value = ((BooleanProperty) property).getValue();
+            
+            if (value == null || value.getValue() == null) {
+            	return null;
+            }
+			return value.getValue().toString();
+        }
+        case DATE: {
+            DateValue value = ((DateProperty) property).getValue();
+            
+            if (value == null || value.getValue() == null) {
+            	return null;
+            }
+			return value.getValue().toString();
+        }
+        case DOUBLE: {
+            DoubleValue value = ((DoubleProperty) property).getValue();
+			
+            if (value == null || value.getValue() == null) {
+            	return null;
+            }
+            return value.getValue().toString();
+        }
+        case INTEGER: {
+            IntegerValue value = ((IntegerProperty) property).getValue();
+			
+            if (value == null || value.getValue() == null) {
+            	return null;
+            }
+            return value.getValue().toString();
+        }
+        case LONG: {
+        	LongValue value = ((LongProperty) property).getValue();
+
+        	if (value == null || value.getValue() == null) {
+            	return null;
+            }
+        	return value.getValue().toString();
+        }
+        case STRING: {
+            StringValue value = ((StringProperty) property).getValue();
+			
+            if (value == null) {
+            	return null;
+            }
+            return value.getValue();
+        }
+        case XML: {
+            XmlValue value = ((XmlProperty) property).getValue();
+			
+            if (value == null) {
+            	return null;
+            }
+            return value.getValue();
+        }
+        case XPATH: {
+            XPathValue value = ((XPathProperty) property).getValue();
+			
+            if (value == null) {
+            	return null;
+            }
+            return value.getValue();
+        }
+        case FILE: {
+            TextFileContent content = ((FileProperty) property).getContent();
+			
+            if (content == null) {
+            	return null;
+            }
+            return content.getValue();
+        } 
+        case SQL: {
+            SqlValue value = ((SqlProperty) property).getValue();
+			
+            if (value == null) {
+            	return null;
+            }
+            return value.getValue();  
+        }      
         case LIST:
-            return printList((PropertyList) property);
-        case LONG:
-            return ((LongProperty) property).getValue().getValue().toString();
-        case STRING:
-            return ((StringProperty) property).getValue().getValue();
-        case XML:
-            return ((XmlProperty) property).getValue().getValue();
-        case XPATH:
-            return ((XPathProperty) property).getValue().getValue();
-        case FILE:
-            return ((FileProperty) property).getContent().getValue();
-        case SQL:
-        	return ((SqlProperty) property).getValue().getValue();
+        	return printList((PropertyList) property);
         default:
             return "n/a";
         }
@@ -434,6 +495,7 @@ public abstract class PropertyHelper {
         }
         
         switch (property.getType()) {
+        
         case BOOLEAN: {
             BooleanValue value = ((BooleanProperty) property).getValue();
             

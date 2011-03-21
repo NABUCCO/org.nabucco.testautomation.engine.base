@@ -73,6 +73,7 @@ public class TestResultHelper {
 	public static ManualTestResult createManualTestResult(TestResult orgResult) {
 		ManualTestResult result = new ManualTestResult();
 		result.setDatatypeState(DatatypeState.INITIALIZED);
+		result.setBrandType(orgResult.getBrandType());
 		result.setStatus(TestConfigElementStatusType.PASSED);
 		result.setState(ManualState.INITIALIZED);
 		result.setTestConfigElementId(orgResult.getTestConfigElementId());

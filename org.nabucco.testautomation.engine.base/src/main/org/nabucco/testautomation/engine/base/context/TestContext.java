@@ -22,9 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.nabucco.testautomation.config.facade.datatype.TestConfigElement;
 import org.nabucco.testautomation.engine.base.engine.ExecutionController;
 import org.nabucco.testautomation.engine.base.util.PropertyHelper;
 
+import org.nabucco.testautomation.facade.datatype.base.HierarchyLevelType;
 import org.nabucco.testautomation.facade.datatype.engine.SubEngineType;
 import org.nabucco.testautomation.facade.datatype.engine.proxy.ProxyConfiguration;
 import org.nabucco.testautomation.facade.datatype.property.base.Property;
@@ -41,7 +43,7 @@ import org.nabucco.testautomation.script.facade.datatype.dictionary.base.TestScr
  * 
  * @author Steffen Schmidt, PRODYNA AG
  */
-public class TestContext implements Serializable, Cloneable {
+public final class TestContext implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -85,6 +87,8 @@ public class TestContext implements Serializable, Cloneable {
     
     private ExecutionController executionController;
     
+    private Map<HierarchyLevelType, TestConfigElement> currentTestConfigElement;
+    
     private TestScript currentTestScript;
     
     private TestScriptElement currentTestScriptElement;
@@ -98,7 +102,7 @@ public class TestContext implements Serializable, Cloneable {
      */
     public TestContext() {
         this.propertyMap = new HashMap<String, Property>();
-        this.proxyConfigurations= new HashMap<SubEngineType, ProxyConfiguration>();
+        this.currentTestConfigElement = new HashMap<HierarchyLevelType, TestConfigElement>();
     }
 
     /**
@@ -179,6 +183,10 @@ public class TestContext implements Serializable, Cloneable {
      *            the configuration to set
      */
     public void addProxyConfiguration(ProxyConfiguration configuration) {
+    	
+    	if (this.proxyConfigurations == null) {
+    		this.proxyConfigurations = new HashMap<SubEngineType, ProxyConfiguration>();
+    	}
     	this.proxyConfigurations.put(configuration.getSubEngineType(), configuration);
     }
     
@@ -190,6 +198,10 @@ public class TestContext implements Serializable, Cloneable {
      * @return the configuration or null, if not found
      */
     public ProxyConfiguration getProxyConfiguration(SubEngineType type) {
+    	
+    	if (this.proxyConfigurations == null) {
+    		return null;
+    	}
     	return this.proxyConfigurations.get(type);
     }
 
@@ -262,6 +274,35 @@ public class TestContext implements Serializable, Cloneable {
 	public TestConfigurationResult getTestConfigurationResult() {
 		return testConfigurationResult;
 	}
+	
+	/**
+	 * 
+	 * @param element
+	 */
+	public void setCurrentTestConfigElement(TestConfigElement element) {
+		
+		if (element == null || element.getSchemaElement() == null) {
+			return;
+		}
+		
+		if (this.currentTestConfigElement == null) {
+			this.currentTestConfigElement = new HashMap<HierarchyLevelType, TestConfigElement>();
+		}		
+		this.currentTestConfigElement.put(element.getSchemaElement().getLevel(), element);		
+	}
+	
+	/**
+	 * 
+	 * @param level
+	 * @return
+	 */
+	public TestConfigElement getCurrentTestConfigElement(HierarchyLevelType level) {
+		
+		if (level == null || this.currentTestConfigElement == null) {
+			return null;
+		}
+		return this.currentTestConfigElement.get(level);
+	}
 
 	/**
 	 * Creates a pseudo-clone. Only the contained properties are cloned.
@@ -271,15 +312,26 @@ public class TestContext implements Serializable, Cloneable {
 	public TestContext dublicate() {
 		
 		TestContext clone = new TestContext();
+		clone.tracing = this.tracing;
 		
 		for (Property property : this.propertyMap.values()) {
 			clone.put(property.cloneObject());
 		}
-		clone.proxyConfigurations = this.proxyConfigurations;
-		clone.executionController = this.executionController;
-		clone.testConfigurationResult = this.testConfigurationResult;
-		clone.tracing = this.tracing;
+		clone.setProxyConfigurations(this.proxyConfigurations);
+		clone.setExecutionController(this.executionController);
+		clone.setTestConfigurationResult(this.testConfigurationResult);
+		clone.setCurrentTestConfigElement(this.currentTestConfigElement);
 		return clone;
+	}
+
+	protected void setProxyConfigurations(
+			Map<SubEngineType, ProxyConfiguration> proxyConfigurations) {
+		this.proxyConfigurations = proxyConfigurations;
+	}
+
+	protected void setCurrentTestConfigElement(
+			Map<HierarchyLevelType, TestConfigElement> currentTestConfigElement) {
+		this.currentTestConfigElement = currentTestConfigElement;
 	}
 	
 }
